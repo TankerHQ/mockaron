@@ -235,17 +235,17 @@ public:
 
   mock()
   {
-    detail::register_mock(&get());
+    detail::register_mock(&_p);
     _p = new M();
   }
   ~mock()
   {
     delete _p;
-    detail::unregister_mock(&get());
+    detail::unregister_mock(&_p);
   }
   T& get()
   {
-    return *reinterpret_cast<T*>(&_p);
+    return *get_fake();
   }
   M& get_mock_impl()
   {
@@ -254,6 +254,11 @@ public:
 
 private:
   detail::mock_impl* _p;
+
+  T* get_fake()
+  {
+    return reinterpret_cast<T*>(&_p);
+  }
 };
 
 }
