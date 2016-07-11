@@ -203,7 +203,8 @@ auto run_hook(mock_impl* mi, char const* name, Args&&... args)
       std::string(name) + "##" + typeid(wrap<Sig>).name();
   if (!mi->_methods.count(n))
   {
-    std::cerr << n << " is not mocked!" << std::endl;
+    std::cerr << n << " is not mocked! See README for more information." <<
+      std::endl;
     std::terminate();
   }
   return mi->_methods[n].get<std::function<remove_abomination_t<Sig>>>()(

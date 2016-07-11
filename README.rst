@@ -90,9 +90,33 @@ compiling your library.
 Troubleshooting
 ***************
 
+Case 1
+------
+
 ::
 
   ../test.cpp:28:3: error: address of overloaded function 'f' cannot be static_cast to type '::mockaron::detail::add_class_ptr_t<MyClass, int (const float &)>' (aka 'int (MyClass::*)(const float &)')
 
 This means that you are using one of the ``_SIG`` macros but got the signature
 wrong, double check it.
+
+Case 2
+------
+
+::
+
+  GetBlobId##N8mockaron6detail4wrapIKFN5boost8optionalIN6Tanker6Common6BlobIdEEERKNS2_10filesystem4pathEEEE is not mocked!
+
+This means that you put a hook on one of the methods of your class but you
+didn't provide an implementation for the mock with ``MOCK_SET_IMPL`` or
+``MOCK_DECLARE_IMPL``.
+
+The logged name in two parts, you have the name of the function before the
+``##`` thing, and the mangled function signature after.
+If you demangle it, you can get the full signature::
+
+  $ c++filt -t N8mockaron6detail4wrapIKFN5boost8optionalIN6Tanker6Common6BlobIdEEERKNS2_10filesystem4pathEEEE
+  mockaron::detail::wrap<boost::optional<Tanker::Common::BlobId> (boost::filesystem::path const&) const>
+
+Ignore the ``mockaron::detail::wrap<>`` part and you get the signature of the
+method.
