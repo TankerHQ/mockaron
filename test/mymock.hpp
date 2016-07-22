@@ -15,6 +15,7 @@ struct MyMock : public mockaron::mock_impl
     MOCKARON_DECLARE_IMPL(My, h);
     MOCKARON_DECLARE_IMPL(My, i);
     MOCKARON_DECLARE_IMPL(My, j);
+    MOCKARON_DECLARE_IMPL(My, k);
   }
 
   int f(int y)
@@ -46,7 +47,13 @@ struct MyMock : public mockaron::mock_impl
     z = 42;
   }
 
+  My::NoCopy& k()
+  {
+    return no;
+  }
+
   int z{0};
+  My::NoCopy no;
 };
 
 #define CHECK(x)                                     \

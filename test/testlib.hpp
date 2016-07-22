@@ -4,6 +4,15 @@
 class My
 {
 public:
+  struct NoCopy
+  {
+    NoCopy() = default;
+    NoCopy(NoCopy const&) = delete;
+    NoCopy& operator=(NoCopy const&) = delete;
+    NoCopy(NoCopy&&) = delete;
+    NoCopy& operator=(NoCopy&&) = delete;
+  };
+
   My(float);
   ~My();
 
@@ -13,9 +22,11 @@ public:
   int h(int) const;
   int i();
   void j();
+  NoCopy& k();
 
 private:
   int _i;
+  NoCopy _no;
 };
 
 #endif

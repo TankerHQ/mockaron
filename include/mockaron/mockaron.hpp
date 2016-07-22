@@ -42,9 +42,9 @@
  * \param cl the class to mock
  * \param func the function to mock
  */
-#define MOCKARON_DECLARE_IMPL(cl, func)                       \
-  MOCKARON_SET_IMPL(cl, func, [this](auto&&... args) {        \
-    return this->func(std::forward<decltype(args)>(args)...); \
+#define MOCKARON_DECLARE_IMPL(cl, func)                                  \
+  MOCKARON_SET_IMPL(cl, func, [this](auto&&... args) -> decltype(auto) { \
+    return this->func(std::forward<decltype(args)>(args)...);            \
   });
 
 /** Declare an implementation of a function in presence of overload
@@ -53,10 +53,11 @@
  *
  * \param sig the signature of the function to mock
  */
-#define MOCKARON_DECLARE_IMPL_SIG(sig, cl, func)                \
-  MOCKARON_SET_IMPL_SIG(sig, cl, func, [this](auto&&... args) { \
-    return this->func(std::forward<decltype(args)>(args)...);   \
-  });
+#define MOCKARON_DECLARE_IMPL_SIG(sig, cl, func)                  \
+  MOCKARON_SET_IMPL_SIG(                                          \
+      sig, cl, func, [this](auto&&... args) -> decltype(auto) {   \
+        return this->func(std::forward<decltype(args)>(args)...); \
+      });
 
 #if MOCKARON_DISABLE_HOOKS
 #define MOCKARON_HOOK(...)
@@ -193,11 +194,13 @@ private:
   void add_hook_(char const* name, char const* sig, any h);
 
   template <typename Sig, typename... Args>
-  friend auto run_hook(mock_impl* mi, char const* name, Args&&... args);
+  friend decltype(auto) run_hook(mock_impl* mi,
+                                 char const* name,
+                                 Args&&... args);
 };
 
 template <typename Sig, typename... Args>
-auto run_hook(mock_impl* mi, char const* name, Args&&... args)
+decltype(auto) run_hook(mock_impl* mi, char const* name, Args&&... args)
 {
   auto const n =
       std::string(name) + "##" + typeid(wrap<Sig>).name();

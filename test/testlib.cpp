@@ -54,3 +54,9 @@ void My::j()
   MOCKARON_HOOK0(My, j);
   throw std::runtime_error("don't call me");
 }
+
+My::NoCopy& My::k()
+{
+  MOCKARON_HOOK0(My, k);
+  return _no;
+}

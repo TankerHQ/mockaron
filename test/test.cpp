@@ -37,6 +37,7 @@ int test()
   CHECK(mock.get().h(2) == 4);
   CHECK(mock.get().i() == 2);
   mock.get().j();
+  CHECK(&mock.get().k() == &mock.get_mock_impl().no);
   CHECK(mock.get_mock_impl().z == 42);
 
   CHECK(real.f(4) == 16);
