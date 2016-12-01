@@ -23,6 +23,10 @@ public:
   int i();
   void j();
   NoCopy& k();
+  static char const* l(int);
+  static bool m();
+  static int n(int xx);
+  static float n(float xx);
 
 private:
   int _i;
