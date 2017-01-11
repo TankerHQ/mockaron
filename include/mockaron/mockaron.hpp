@@ -9,11 +9,20 @@
 #include <typeinfo>
 #include <functional>
 
-/** Set a function implementation for a mock
+/// Private macro
+#define MOCKARON_NOTHING
+/// Private macro
+#define MOCKARON_ADD_COMMA(...) , __VA_ARGS__
+/// Private macro
+#define MOCKARON_CONCAT_I(a, b) a ## b
+/// Private macro
+#define MOCKARON_CONCAT(a, b) MOCKARON_CONCAT_I(a, b)
+
+/** Set a function implementation for a method mock
  *
  * \param cl the class to mock
- * \param func function to mock
- * \param hndl functor to run when the function is called
+ * \param func method to mock
+ * \param hndl functor to run when the method is called
  */
 #define MOCKARON_SET_IMPL(cl, func, hndl)                           \
   mock_impl::add_hook<                                              \
@@ -24,10 +33,10 @@
  *
  * Same as MOCKARON_SET_IMPL with support for overload.
  *
- * \param sig the signature of the function to mock
+ * \param sig the signature of the method to mock
  *
  * This macro will trigger a compilation error if there is no such signature for
- * the given function.
+ * the given method.
  */
 #define MOCKARON_SET_IMPL_SIG(sig, cl, func, hndl)                   \
   do                                                                 \
@@ -37,21 +46,21 @@
     mock_impl::add_hook<sig>(#func, hndl);                           \
   } while (0)
 
-/** Declare an implementation of a function
+/** Declare an implementation of a method
  *
  * \param cl the class to mock
- * \param func the function to mock
+ * \param func the method to mock
  */
 #define MOCKARON_DECLARE_IMPL(cl, func)                                  \
   MOCKARON_SET_IMPL(cl, func, [this](auto&&... args) -> decltype(auto) { \
     return this->func(std::forward<decltype(args)>(args)...);            \
   });
 
-/** Declare an implementation of a function in presence of overload
+/** Declare an implementation of a method in presence of overload
  *
  * Same as MOCKARON_DECLARE_IMPL with support for overload.
  *
- * \param sig the signature of the function to mock
+ * \param sig the signature of the method to mock
  */
 #define MOCKARON_DECLARE_IMPL_SIG(sig, cl, func)                  \
   MOCKARON_SET_IMPL_SIG(                                          \
@@ -59,16 +68,29 @@
         return this->func(std::forward<decltype(args)>(args)...); \
       });
 
+/** Set a function implementation for a function mock
+ *
+ * \param func function to mock
+ * \param hndl functor to run when the function is called
+ */
+#define MOCKARON_SET_FUNCTION_IMPL(func, hndl)                         \
+  ::mockaron::detail::raii_mock<std::remove_pointer_t<decltype(func)>> \
+      MOCKARON_CONCAT(_mockaron_function_mock, __LINE__)(              \
+          reinterpret_cast<void const*>(func), hndl)
+
 #if MOCKARON_DISABLE_HOOKS
 #define MOCKARON_HOOK(...)
 #define MOCKARON_HOOK0(...)
 #define MOCKARON_HOOK_SIG(...)
 #define MOCKARON_HOOK_SIG0(...)
+#define MOCKARON_FUNCTION_HOOK(...)
+#define MOCKARON_FUNCTION_HOOK0(...)
 #else
-/** Hook a function with mockaron
+
+/** Hook a method with mockaron
  *
  * \param cl the class
- * \param func the function
+ * \param func the method
  * \param ... the arguments received
  */
 #define MOCKARON_HOOK(cl, func, ...)                               \
@@ -78,9 +100,9 @@
       func,                                                        \
       __VA_ARGS__)
 
-/** Hook a function without arguments with mockaron
+/** Hook a method without arguments with mockaron
  *
- * Same as MOCKARON_HOOK for function without arguments.
+ * Same as MOCKARON_HOOK for methods without arguments.
  */
 #define MOCKARON_HOOK0(cl, func) \
   MOCKARON_HOOK_SIG0(            \
@@ -99,23 +121,41 @@
         #func exp);                                                     \
   } while (0)
 
-/// Private macro
-#define MOCKARON_NOTHING
-/// Private macro
-#define MOCKARON_EXPAND(...) , __VA_ARGS__
+/** Hook a function with mockaron
+ *
+ * \param func the function
+ * \param ... the arguments received
+ */
+#define MOCKARON_FUNCTION_HOOK(func, args)                                     \
+  do                                                                           \
+  {                                                                            \
+    auto const mock =                                                          \
+        ::mockaron::detail::get_function_hook(reinterpret_cast<void*>(func));  \
+    if (!mock)                                                                 \
+      break;                                                                   \
+    return mock                                                                \
+        ->get<::std::function<std::remove_pointer_t<decltype(func)>>>()(args); \
+  } while (0)
 
-/** Hook a function in prensence of overload
+/** Hook a function without arguments with mockaron
+ *
+ * Same as MOCKARON_FUNCTION_HOOK for functions without arguments.
+ */
+#define MOCKARON_FUNCTION_HOOK0(func) \
+  MOCKARON_FUNCTION_HOOK(func, MOCKARON_NOTHING)
+
+/** Hook a method in prensence of overload
  *
  * Same as MOCKARON_HOOK with support for overload.
  *
- * \param sig the signature of the function to mock
+ * \param sig the signature of the method to mock
  */
 #define MOCKARON_HOOK_SIG(sig, cl, func, ...) \
-  MOCKARON_HOOK_SIG_(sig, cl, func, MOCKARON_EXPAND(__VA_ARGS__))
+  MOCKARON_HOOK_SIG_(sig, cl, func, MOCKARON_ADD_COMMA(__VA_ARGS__))
 
-/** Hook a function without argument in presence of overload
+/** Hook a method without argument in presence of overload
  *
- * Same as MOCKARON_HOOK_SIG for function without arguments.
+ * Same as MOCKARON_HOOK_SIG for methods without arguments.
  */
 #define MOCKARON_HOOK_SIG0(sig, cl, func) \
   MOCKARON_HOOK_SIG_(sig, cl, func, MOCKARON_NOTHING)
@@ -217,6 +257,27 @@ decltype(auto) run_hook(mock_impl* mi, char const* name, Args&&... args)
 void register_mock(void const* p);
 void unregister_mock(void const* p);
 bool is_a_mock(void const* v);
+
+any* get_function_hook(void const* n);
+void register_function_mock(void const* n, any h);
+void unregister_function_mock(void const* n);
+
+template <typename Sig>
+class raii_mock
+{
+public:
+  raii_mock(void const* reff, std::function<Sig> f) : ref(reff)
+  {
+    register_function_mock(ref, std::move(f));
+  }
+  ~raii_mock()
+  {
+    unregister_function_mock(ref);
+  }
+
+private:
+  void const* ref;
+};
 
 }
 

@@ -60,3 +60,28 @@ My::NoCopy& My::k()
   MOCKARON_HOOK0(My, k);
   return _no;
 }
+
+char const* My::l(int xx)
+{
+  MOCKARON_FUNCTION_HOOK(l, xx);
+  (void)xx;
+  return "fortytwo";
+}
+
+bool My::m()
+{
+  MOCKARON_FUNCTION_HOOK0(m);
+  return false;
+}
+
+int My::n(int xx)
+{
+  MOCKARON_FUNCTION_HOOK(static_cast<int(*)(int)>(n), xx);
+  return xx * 2;
+}
+
+float My::n(float xx)
+{
+  MOCKARON_FUNCTION_HOOK(static_cast<float(*)(float)>(n), xx);
+  return xx * 2;
+}
