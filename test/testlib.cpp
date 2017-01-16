@@ -61,10 +61,11 @@ My::NoCopy& My::k()
   return _no;
 }
 
-char const* My::l(int xx)
+char const* My::l(int xx, char yy)
 {
-  MOCKARON_FUNCTION_HOOK(l, xx);
+  MOCKARON_FUNCTION_HOOK(l, xx, yy);
   (void)xx;
+  (void)yy;
   return "fortytwo";
 }
 

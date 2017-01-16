@@ -126,15 +126,16 @@
  * \param func the function
  * \param ... the arguments received
  */
-#define MOCKARON_FUNCTION_HOOK(func, args)                                     \
-  do                                                                           \
-  {                                                                            \
-    auto const mock =                                                          \
-        ::mockaron::detail::get_function_hook(reinterpret_cast<void*>(func));  \
-    if (!mock)                                                                 \
-      break;                                                                   \
-    return mock                                                                \
-        ->get<::std::function<std::remove_pointer_t<decltype(func)>>>()(args); \
+#define MOCKARON_FUNCTION_HOOK(func, ...)                                     \
+  do                                                                          \
+  {                                                                           \
+    auto const mock =                                                         \
+        ::mockaron::detail::get_function_hook(reinterpret_cast<void*>(func)); \
+    if (!mock)                                                                \
+      break;                                                                  \
+    return mock                                                               \
+        ->get<::std::function<std::remove_pointer_t<decltype(func)>>>()(      \
+            __VA_ARGS__);                                                     \
   } while (0)
 
 /** Hook a function without arguments with mockaron
