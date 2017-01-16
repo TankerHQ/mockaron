@@ -23,7 +23,7 @@ public:
   int i();
   void j();
   NoCopy& k();
-  static char const* l(int);
+  static char const* l(int, char);
   static bool m();
   static int n(int xx);
   static float n(float xx);

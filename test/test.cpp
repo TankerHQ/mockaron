@@ -20,7 +20,7 @@ int testnohook()
   CHECK(mock.get_mock_impl().z == 0);
 
   {
-    MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i) {
+    MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i, char j) {
       if (i == 8)
         return "roflol";
       return (char const*)nullptr;
@@ -31,7 +31,7 @@ int testnohook()
     MOCKARON_SET_FUNCTION_IMPL(static_cast<float (*)(float)>(My::n),
                                [](float i) { return i * 8; });
 
-    CHECK(!std::strcmp(My::l(8), "fortytwo"));
+    CHECK(!std::strcmp(My::l(8, 0), "fortytwo"));
     CHECK(!My::m());
     CHECK(My::n(2) == 4);
     CHECK(My::n(2.f) == 4.f);
@@ -61,18 +61,18 @@ int test()
 
   CHECK(real.f(4) == 16);
 
-  CHECK(!std::strcmp(My::l(8), "fortytwo"));
+  CHECK(!std::strcmp(My::l(8, 0), "fortytwo"));
   CHECK(!My::m());
   CHECK(My::n(2) == 4);
   CHECK(My::n(2.f) == 4.f);
 
   {
-    MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i) {
+    MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i, char j) {
       if (i == 8)
         return "roflol";
       return (char const*)nullptr;
     });
-    CHECK(!std::strcmp(My::l(8), "roflol"));
+    CHECK(!std::strcmp(My::l(8, 0), "roflol"));
   }
   {
     MOCKARON_SET_FUNCTION_IMPL(My::m, []() { return true; });
