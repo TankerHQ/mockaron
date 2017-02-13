@@ -22,5 +22,5 @@ add_executable(test_mockaron_nohook
 target_link_libraries(test_mockaron_nohook testlibnohook mockaron)
 target_compile_definitions(test_mockaron_nohook PRIVATE MOCKARON_DISABLE_HOOKS)
 
-add_test(test_mockaron test_mockaron)
-add_test(test_mockaron_nohook test_mockaron_nohook)
+add_test(NAME test_mockaron COMMAND test_mockaron)
+add_test(NAME test_mockaron_nohook COMMAND test_mockaron_nohook)
