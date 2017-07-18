@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.4)
 project(mockaron)
 
-enable_testing()
+if (NOT MOCKARON_NOTEST)
+  enable_testing()
+endif()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -17,4 +19,6 @@ add_library(mockaron STATIC
 )
 target_include_directories(mockaron PUBLIC include)
 
-add_subdirectory(test)
+if (NOT MOCKARON_NOTEST)
+  add_subdirectory(test)
+endif()
