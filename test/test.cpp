@@ -20,7 +20,7 @@ int testnohook()
   CHECK(mock.get_mock_impl().z == 0);
 
   {
-    MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i, char j) {
+    MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i, char) {
       if (i == 8)
         return "roflol";
       return (char const*)nullptr;
@@ -67,7 +67,7 @@ int test()
   CHECK(My::n(2.f) == 4.f);
 
   {
-    MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i, char j) {
+    MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i, char) {
       if (i == 8)
         return "roflol";
       return (char const*)nullptr;
