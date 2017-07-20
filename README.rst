@@ -158,6 +158,31 @@ About mock implementation:
 To disable hooking features, you must define ``MOCKARON_DISABLE_HOOKS=1`` when
 compiling your library.
 
+Build and install
+*****************
+
+To build mockaron, just do the following::
+
+  $ mkdir build
+  $ cd build
+  $ cmake ..
+  $ make
+  $ make install
+
+You can add the flag ``-DBUILD_SHARED_LIBS=ON`` when calling CMake if you want
+a shared library and ``-DCMAKE_INSTALL_PREFIX=<path>`` if you want to tweak the
+installation path.
+
+To link with the library in a CMake project:
+
+.. code-block:: cmake
+
+  set(CMAKE_CXX_STANDARD 14)
+  # ...
+  find_package(mockaron)
+  # ...
+  target_link_libraries(your_target PUBLIC mockaron::mockaron)
+
 FAQ
 ***
 
