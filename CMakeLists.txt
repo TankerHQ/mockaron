@@ -21,6 +21,15 @@ add_library(mockaron
 )
 target_include_directories(mockaron PUBLIC include)
 
+install(TARGETS mockaron
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
+install(DIRECTORY include
+  DESTINATION .
+)
+
 if (NOT MOCKARON_NOTEST)
   add_subdirectory(test)
 endif()
