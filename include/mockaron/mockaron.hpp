@@ -83,6 +83,7 @@
 #define MOCKARON_HOOK0(...)
 #define MOCKARON_HOOK_SIG(...)
 #define MOCKARON_HOOK_SIG0(...)
+#define MOCKARON_HOOK_TEMPLATE(...)
 #define MOCKARON_FUNCTION_HOOK(...)
 #define MOCKARON_FUNCTION_HOOK0(...)
 #else
@@ -119,6 +120,13 @@
     return ::mockaron::detail::run_hook<sig>(                           \
         *reinterpret_cast<::mockaron::detail::mock_impl* const*>(this), \
         #func exp);                                                     \
+  } while (0)
+
+#define MOCKARON_HOOK_TEMPLATE(cl, func, mock, ...)            \
+  do                                                           \
+  {                                                            \
+    if (::mockaron::detail::is_a_mock(this))                   \
+      return reinterpret_cast<mock*>(this)->func(__VA_ARGS__); \
   } while (0)
 
 /** Hook a function with mockaron

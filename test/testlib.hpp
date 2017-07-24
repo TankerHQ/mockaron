@@ -28,9 +28,26 @@ public:
   static int n(int xx);
   static float n(float xx);
 
+  template <typename T>
+  int t(T v);
+
 private:
+  template <typename T>
+  int t_(T v)
+  {
+    return 3 * v;
+  }
+
   int _i;
   NoCopy _no;
 };
+
+#ifndef MYCLASS_IS_MOCKED
+template <typename T>
+int My::t(T v)
+{
+  return this->t_(v);
+}
+#endif
 
 #endif

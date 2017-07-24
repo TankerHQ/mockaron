@@ -2,7 +2,19 @@
 #include <cstring>
 #include <iostream>
 
+#if MOCKARON_DISABLE_HOOKS
 #include "mymock.hpp"
+#else
+#define MYCLASS_IS_MOCKED
+#include "mymock.hpp"
+
+template <typename T>
+int My::t(T v)
+{
+  MOCKARON_HOOK_TEMPLATE(My, t, MyMock, v);
+  return this->t_(v);
+}
+#endif
 
 int testnohook()
 {
@@ -18,6 +30,8 @@ int testnohook()
   CHECK(mock.get().h(2) == 8);
   CHECK(mock.get().i() == 0);
   CHECK(mock.get_mock_impl().z == 0);
+  CHECK(mock.get().t(4) == 12);
+  CHECK(mock.get().t(3.0) == 9);
 
   {
     MOCKARON_SET_FUNCTION_IMPL(My::l, [](int i, char) {
@@ -58,6 +72,8 @@ int test()
   mock.get().j();
   CHECK(&mock.get().k() == &mock.get_mock_impl().no);
   CHECK(mock.get_mock_impl().z == 42);
+  CHECK(mock.get().t(4) == 8);
+  CHECK(mock.get().t(3.0) == 6);
 
   CHECK(real.f(4) == 16);
 

@@ -86,6 +86,53 @@ specify the signature of the method you want to mock:
   // to define it
   MOCKARON_DECLARE_IMPL_SIG(void(std::string const&), MyClass, myFunction);
 
+Mocking a template method
+-------------------------
+
+In order to mock a template method, you must have two methods: an "interface"
+method, and an "implementation" method. The interface method will be
+overwritten when testing, while the implementation won't change and should
+perform the actual computations.
+
+.. code-block:: cpp
+
+  // ---------------------------------------------------------- myclass.hpp
+  class MyClass {
+  public:
+  template <typename T>
+  T f(T i);
+
+  private:
+  // real f_ implementation
+  template <typename T>
+  T f_(T i) {
+    return i * 2;
+  }
+  };
+
+  #ifndef MYCLASS_IS_MOCKED
+  template <typename T>
+  T MyClass::f(T i)
+  {
+    return this->f_<T>(i);
+  }
+  #endif
+
+  // ---------------------------------------------------------- test.cpp
+  #define MYCLASS_IS_MOCKED
+  #include <myclass.hpp>
+
+  template <typename T>
+  T MyClass::f(T i) {
+    MOCKARON_HOOK_TEMPLATE(MyClass, f, MyClassMock, i);
+
+    return this->f_<T>(i);
+  }
+
+When compiling tests, the macro definition will prevent ``MyClass::f`` from
+being used. Instead, another implementation is provided in the test file, where
+the hook is run. Hooking is done via the ``MOCKARON_HOOK_TEMPLATE`` macro.
+
 Mocking a free function
 -----------------------
 

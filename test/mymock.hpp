@@ -52,6 +52,12 @@ struct MyMock : public mockaron::mock_impl
     return no;
   }
 
+  template <typename T>
+  int t(T v)
+  {
+    return 2 * v;
+  }
+
   int z{0};
   My::NoCopy no;
 };
