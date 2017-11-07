@@ -9,6 +9,12 @@
 #include <typeinfo>
 #include <functional>
 
+#if defined(_WIN32) && defined(mockaron_EXPORTS)
+#define MOCKARON_EXPORT __declspec(dllexport)
+#else
+#define MOCKARON_EXPORT
+#endif
+
 /// Private macro
 #define MOCKARON_NOTHING
 /// Private macro
@@ -232,7 +238,7 @@ private:
   using map_type = std::unordered_map<std::string, any>;
   map_type _methods;
 
-  void add_hook_(char const* name, char const* sig, any h);
+  MOCKARON_EXPORT void add_hook_(char const* name, char const* sig, any h);
 
   template <typename Sig, typename... Args>
   friend decltype(auto) run_hook(mock_impl* mi,
@@ -255,13 +261,13 @@ decltype(auto) run_hook(mock_impl* mi, char const* name, Args&&... args)
       std::forward<Args>(args)...);
 }
 
-void register_mock(void const* p);
-void unregister_mock(void const* p);
-bool is_a_mock(void const* v);
+MOCKARON_EXPORT void register_mock(void const* p);
+MOCKARON_EXPORT void unregister_mock(void const* p);
+MOCKARON_EXPORT bool is_a_mock(void const* v);
 
-any* get_function_hook(void const* n);
-void register_function_mock(void const* n, any h);
-void unregister_function_mock(void const* n);
+MOCKARON_EXPORT any* get_function_hook(void const* n);
+MOCKARON_EXPORT void register_function_mock(void const* n, any h);
+MOCKARON_EXPORT void unregister_function_mock(void const* n);
 
 template <typename Sig>
 class raii_mock
