@@ -47,9 +47,23 @@
 #define MOCKARON_SET_IMPL_SIG(sig, cl, func, hndl)                   \
   do                                                                 \
   {                                                                  \
+    /* check that the function exists */                             \
     (void)static_cast<::mockaron::detail::add_class_ptr_t<cl, sig>>( \
         &cl::func);                                                  \
     mock_impl::add_hook<sig>(#func, hndl);                           \
+  } while (0)
+
+/** Same as MOCKARON_SET_IMPL_SIG but with a custom return type.
+ *
+ * Useful for coroutine code.
+ */
+#define MOCKARON_SET_IMPL_CUSTOM(sig, ret, cl, func, hndl)           \
+  do                                                                 \
+  {                                                                  \
+    /* check that the function exists */                             \
+    (void)static_cast<::mockaron::detail::add_class_ptr_t<cl, sig>>( \
+        &cl::func);                                                  \
+    mock_impl::add_hook<sig, ret>(#func, hndl);                      \
   } while (0)
 
 /** Declare an implementation of a method
@@ -72,6 +86,16 @@
   MOCKARON_SET_IMPL_SIG(                                          \
       sig, cl, func, [this](auto&&... args) -> decltype(auto) {   \
         return this->func(std::forward<decltype(args)>(args)...); \
+      });
+
+/** Same as MOCKARON_DECLARE_IMPL_SIG but with a custom return type.
+ *
+ * Useful for coroutine code.
+ */
+#define MOCKARON_DECLARE_IMPL_CUSTOM(sig, ret, cl, func)             \
+  MOCKARON_SET_IMPL_CUSTOM(                                          \
+      sig, ret, cl, func, [this](auto&&... args) -> decltype(auto) { \
+        return this->func(std::forward<decltype(args)>(args)...);    \
       });
 
 /** Set a function implementation for a function mock
@@ -114,17 +138,35 @@
   MOCKARON_HOOK_SIG0(            \
       ::mockaron::detail::remove_class_ptr_t<decltype(&cl::func)>, cl, func)
 
-/// Private macro
-#define MOCKARON_HOOK_SIG_(sig, cl, func, exp)                          \
+/** Same as MOCKARON_HOOK_SIG but with a custom return type.
+ *
+ * Useful for coroutine code.
+ *
+ * Usage:
+ *
+ *   MOCKARON_HOOK_CUSTOM(// function signature
+ *                        tc::cotask<PullResult>(gsl::span<GroupId const>),
+ *                        // real return type
+ *                        PullResult,
+ *                        // class name
+ *                        GroupAccessor,
+ *                        // function name
+ *                        pull,
+ *                        // return, co_return or a function-macro
+ *                        TC_RETURN,
+ *                        // arguments
+ *                        MOCKARON_ADD_COMMA(groupIds));
+ */
+#define MOCKARON_HOOK_CUSTOM(sig, ret, cl, func, return, exp)           \
   do                                                                    \
   {                                                                     \
     (void)static_cast<::mockaron::detail::add_class_ptr_t<cl, sig>>(    \
         &cl::func);                                                     \
     if (!::mockaron::detail::is_a_mock(this))                           \
       break;                                                            \
-    return ::mockaron::detail::run_hook<sig>(                           \
+    return ((::mockaron::detail::run_hook<sig, ret>(                    \
         *reinterpret_cast<::mockaron::detail::mock_impl* const*>(this), \
-        #func exp);                                                     \
+        #func exp)));                                                   \
   } while (0)
 
 /** Hook a function with mockaron
@@ -157,15 +199,29 @@
  *
  * \param sig the signature of the method to mock
  */
-#define MOCKARON_HOOK_SIG(sig, cl, func, ...) \
-  MOCKARON_HOOK_SIG_(sig, cl, func, MOCKARON_ADD_COMMA(__VA_ARGS__))
+#define MOCKARON_HOOK_SIG(sig, cl, func, ...)             \
+  MOCKARON_HOOK_CUSTOM(                                   \
+      sig,                                                \
+      ::mockaron::detail::return_type_t<                  \
+          ::mockaron::detail::remove_abomination_t<sig>>, \
+      cl,                                                 \
+      func,                                               \
+      return,                                             \
+      MOCKARON_ADD_COMMA(__VA_ARGS__))
 
 /** Hook a method without argument in presence of overload
  *
  * Same as MOCKARON_HOOK_SIG for methods without arguments.
  */
-#define MOCKARON_HOOK_SIG0(sig, cl, func) \
-  MOCKARON_HOOK_SIG_(sig, cl, func, MOCKARON_NOTHING)
+#define MOCKARON_HOOK_SIG0(sig, cl, func)                 \
+  MOCKARON_HOOK_CUSTOM(                                   \
+      sig,                                                \
+      ::mockaron::detail::return_type_t<                  \
+          ::mockaron::detail::remove_abomination_t<sig>>, \
+      cl,                                                 \
+      func,                                               \
+      return,                                             \
+      MOCKARON_NOTHING)
 #endif
 
 namespace mockaron
@@ -219,19 +275,47 @@ private:
   std::function<void(void*)> _deleter;
 };
 
+template <typename F>
+struct return_type;
+
+template <typename R, typename... Args>
+struct return_type<R(Args...)>
+{
+  using type = R;
+};
+
+template <typename F>
+using return_type_t = typename return_type<F>::type;
+
+template <typename F, typename R2>
+struct replace_return_type;
+
+template <typename R, typename... Args, typename R2>
+struct replace_return_type<R(Args...), R2>
+{
+  using type = R2(Args...);
+};
+
+template <typename F, typename R2>
+using replace_return_type_t = typename replace_return_type<F, R2>::type;
+
 class mock_impl
 {
 public:
   virtual ~mock_impl() = default;
 
 protected:
-  template <typename Sig, typename H>
+  template <
+      typename Sig,
+      typename R = return_type_t<remove_abomination_t<Sig>>,
+      typename H>
   void add_hook(char const* name, H&& handler)
   {
-    add_hook_(name,
-              typeid(wrap<Sig>).name(),
-              any(std::function<remove_abomination_t<Sig>>(
-                  std::forward<H>(handler))));
+    add_hook_(
+        name,
+        typeid(wrap<Sig>).name(),
+        any(std::function<replace_return_type_t<remove_abomination_t<Sig>, R>>(
+            std::forward<H>(handler))));
   }
 
 private:
@@ -240,13 +324,15 @@ private:
 
   MOCKARON_EXPORT void add_hook_(char const* name, char const* sig, any h);
 
-  template <typename Sig, typename... Args>
-  friend decltype(auto) run_hook(mock_impl* mi,
-                                 char const* name,
-                                 Args&&... args);
+  template <typename Sig, typename Ret, typename... Args>
+  friend decltype(auto) run_hook(
+      mock_impl* mi, char const* name, Args&&... args);
 };
 
-template <typename Sig, typename... Args>
+template <
+    typename Sig,
+    typename Ret,
+    typename... Args>
 decltype(auto) run_hook(mock_impl* mi, char const* name, Args&&... args)
 {
   auto const n =
@@ -257,8 +343,10 @@ decltype(auto) run_hook(mock_impl* mi, char const* name, Args&&... args)
       std::endl;
     std::terminate();
   }
-  return mi->_methods[n].get<std::function<remove_abomination_t<Sig>>>()(
-      std::forward<Args>(args)...);
+  return mi->_methods[n]
+      .get<std::function<
+          replace_return_type_t<remove_abomination_t<Sig>, Ret>>>()(
+          std::forward<Args>(args)...);
 }
 
 MOCKARON_EXPORT void register_mock(void const* p);
