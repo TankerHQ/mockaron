@@ -11,16 +11,9 @@ class MockaronConan(ConanFile):
     description = "A C++ mocking library"
     repo_url = "https://github.com/TankerHQ/mockaron"
     generators = "cmake"
+    exports_sources = "CMakeLists.txt", "src", "include", "test", "COPYING"
 
     @property
-    def mockaron_src(self):
-        return "%s-%s" % (self.name, self.version)
-
-    def source(self):
-        zip_url = "%s/archive/v%s.zip" % (self.repo_url, self.version)
-        expected_hash = (
-            "2f1e28619b8a705432eebb9e1ef41004f04eb5ee38d31afdef3c23deb7f24926"
-        )
         tools.get(zip_url, sha256=expected_hash)
 
     def build(self):
@@ -29,7 +22,7 @@ class MockaronConan(ConanFile):
         cmake.definitions["MOCKARON_NOTEST"] = "ON"
         if self.options.fPIC:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
-        cmake.configure(source_dir=self.mockaron_src)
+        cmake.configure()
         cmake.build()
         cmake.install()
 
