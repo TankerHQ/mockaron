@@ -11,7 +11,6 @@ class MockaronConan(ConanFile):
     description = "A C++ mocking library"
     repo_url = "https://github.com/TankerHQ/mockaron"
     generators = "cmake"
-    exports_sources = "*.patch"
 
     @property
     def mockaron_src(self):
@@ -25,7 +24,6 @@ class MockaronConan(ConanFile):
         tools.get(zip_url, sha256=expected_hash)
 
     def build(self):
-        tools.patch(patch_file="CMakeLists.txt.patch", base_path=self.mockaron_src)
 
         cmake = CMake(self)
         cmake.definitions["MOCKARON_NOTEST"] = "ON"

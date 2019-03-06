@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.4)
 project(mockaron)
 
+if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  conan_basic_setup(TARGETS)
+endif()
+
 option(BUILD_SHARED_LIBS "Build as a shared library" OFF)
 
 if (NOT MOCKARON_NOTEST)
