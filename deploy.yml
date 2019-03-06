@@ -1,0 +1,29 @@
+profiles:
+  linux:
+    - gcc8-debug
+    - gcc8-release
+    - android-x86-debug
+    - android-x86-release
+    - android-x86_64-debug
+    - android-x86_64-release
+    - android-armv7-debug
+    - android-armv7-release
+    - android-armv8-debug
+    - android-armv8-release
+    - emscripten
+  darwin:
+    - macos-debug
+    - macos-release
+    - ios-x86-debug
+    - ios-x86-release
+    - ios-x86_64-debug
+    - ios-x86_64-release
+    - ios-armv7-debug
+    - ios-armv7-release
+    - ios-armv7s-debug
+    - ios-armv7s-release
+    - ios-armv8-debug
+    - ios-armv8-release
+  win32:
+    - vs2017-debug
+    - vs2017-release

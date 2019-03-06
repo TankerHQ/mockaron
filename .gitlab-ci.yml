@@ -1,0 +1,65 @@
+image: tanker.local:5000/ci-cpp:latest
+
+before_script:
+ - dmenv install
+
+stages:
+  - build
+  - deploy
+
+.build:
+  stage: build
+  except:
+    - schedules
+
+build/linux:
+  extends: .build
+  tags: [linux]
+  script:
+    - dmenv run -- python run-ci.py build-and-test --profile gcc8-release
+
+build/macos:
+  extends: .build
+  tags: [macos]
+  script:
+    - dmenv run -- python run-ci.py build-and-test --profile macos-release
+
+build/windows:
+  extends: .build
+  tags: [windows]
+  script:
+    - dmenv run -- python run-ci.py build-and-test --profile vs2017-release
+
+
+.deploy:
+  stage: deploy
+  except:
+    - schedules
+  when: manual
+  only:
+    - tags
+
+deploy/linux:
+  extends: .deploy
+  tags: [linux]
+  script:
+    - dmenv run -- python run-ci.py deploy
+
+deploy/macos:
+  extends: .deploy
+  tags: [macos]
+  script:
+    - dmenv run -- python run-ci.py deploy
+
+
+mirror:
+  tags:
+    - linux
+  stage: deploy
+  only:
+    - /\Av[0-9.]+\z/   # public release tags only
+    - master
+  except:
+    - schedules
+  script:
+    - dmenv run python run-ci.py mirror
