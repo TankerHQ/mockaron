@@ -51,6 +51,11 @@ deploy/macos:
   script:
     - dmenv run -- python run-ci.py --isolate-conan-user-home deploy
 
+deploy/windows:
+  extends: .deploy
+  tags: [windows]
+  script:
+    - dmenv run -- python run-ci.py --isolate-conan-user-home deploy
 
 mirror:
   tags:
