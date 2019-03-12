@@ -36,8 +36,6 @@ build/windows:
   except:
     - schedules
   when: manual
-  only:
-    - tags
 
 deploy/linux:
   extends: .deploy
