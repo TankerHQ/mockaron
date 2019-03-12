@@ -33,12 +33,15 @@ def main() -> None:
     if args.command == "build-and-test":
         ci.cpp.check(args.profile, coverage=args.coverage, run_tests=True)
     elif args.command == "deploy":
-        git_tag = os.environ["CI_COMMIT_TAG"]
-        version = ci.version_from_git_tag(git_tag)
-        ci.bump_files(version)
+        git_tag = os.environ.get("CI_COMMIT_TAG")
+        conan_reference = None
+        if git_tag:
+            version = ci.version_from_git_tag(git_tag)
+            ci.bump_files(version)
+            conan_reference=f"tanker/{version}@tanker/stable"
         ci.cpp.build_recipe(
             Path.getcwd(),
-            conan_reference=f"tanker/{version}@tanker/stable",
+            conan_reference=conan_reference,
             upload=True,
         )
     elif args.command == "mirror":
