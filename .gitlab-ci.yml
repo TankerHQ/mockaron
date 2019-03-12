@@ -16,19 +16,19 @@ build/linux:
   extends: .build
   tags: [linux]
   script:
-    - dmenv run -- python run-ci.py build-and-test --profile gcc8-release
+    - dmenv run -- python run-ci.py --isolate-conan-user-home build-and-test --profile gcc8-release
 
 build/macos:
   extends: .build
   tags: [macos]
   script:
-    - dmenv run -- python run-ci.py build-and-test --profile macos-release
+    - dmenv run -- python run-ci.py --isolate-conan-user-home build-and-test --profile macos-release
 
 build/windows:
   extends: .build
   tags: [windows]
   script:
-    - dmenv run -- python run-ci.py build-and-test --profile vs2017-release
+    - dmenv run -- python run-ci.py --isolate-conan-user-home build-and-test --profile vs2017-release
 
 
 .deploy:
@@ -43,13 +43,13 @@ deploy/linux:
   extends: .deploy
   tags: [linux]
   script:
-    - dmenv run -- python run-ci.py deploy
+    - dmenv run -- python run-ci.py --isolate-conan-user-home deploy
 
 deploy/macos:
   extends: .deploy
   tags: [macos]
   script:
-    - dmenv run -- python run-ci.py deploy
+    - dmenv run -- python run-ci.py --isolate-conan-user-home deploy
 
 
 mirror:
@@ -62,4 +62,4 @@ mirror:
   except:
     - schedules
   script:
-    - dmenv run python run-ci.py mirror
+    - dmenv run -- python run-ci.py --isolate-conan-user-home mirror
