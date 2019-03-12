@@ -62,4 +62,4 @@ mirror:
   except:
     - schedules
   script:
-    - dmenv run python run-ci.py --isolate-conan-user-home mirror
+    - dmenv run -- python run-ci.py --isolate-conan-user-home mirror
