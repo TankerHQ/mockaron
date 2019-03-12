@@ -11,7 +11,7 @@ class MockaronConan(ConanFile):
     description = "A C++ mocking library"
     repo_url = "https://github.com/TankerHQ/mockaron"
     generators = "cmake"
-    exports_sources = "CMakeLists.txt", "src", "include", "test", "COPYING"
+    exports_sources = "*"
 
     @property
     def should_build_tests(self):
