@@ -10,7 +10,7 @@ cffi==1.12.2
 chardet==3.0.4
 cli-ui==0.9.1
 colorama==0.4.1
-conan==1.13.0
+conan==1.12.3
 contextlib2==0.5.5
 cryptography==2.3.1
 deprecation==2.0.6
