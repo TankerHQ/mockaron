@@ -37,7 +37,7 @@ def main() -> None:
         ci.bump_files(version)
         ci.cpp.build_recipe(
             Path.getcwd(),
-            conan_reference=f"tanker/{version}@tanker/stable",
+            conan_reference=f"mockaron/{version}@tanker/stable",
             upload=True,
         )
     elif args.command == "mirror":
