@@ -25,3 +25,4 @@ tag_template = "v{new_version}"
 
 [[file]]
 src = "conanfile.py"
+search = 'version = "{current_version}"'
