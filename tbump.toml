@@ -1,19 +1,23 @@
 
 [version]
-current = "0.2"
+current = "dev"
 
-# Example of a semver regexp.
-# Make sure this matches current_version before
-# using tbump
 regex = '''
-  (?P<major>\d+)
-  \.
-  (?P<minor>\d+)
+  (dev)
+  |
   (
+    (?P<major>\d+)
+    \.
+    (?P<minor>\d+)
     \.
     (?P<patch>\d+)
-  )?
-  '''
+    (
+      -
+      (?P<lifecycle>alpha|beta|r)
+      (?P<release>\d+)
+    )?
+  )
+'''
 
 [git]
 message_template = "Bump to {new_version}"

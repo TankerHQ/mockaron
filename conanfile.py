@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class MockaronConan(ConanFile):
     name = "mockaron"
-    version = "0.2"
+    version = "dev"
     license = "BSD-2-Clause"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
