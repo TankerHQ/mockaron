@@ -30,7 +30,8 @@ def main() -> None:
 
     ci.cpp.update_conan_config()
     if args.command == "build-and-test":
-        ci.cpp.check(args.profile, coverage=args.coverage, run_tests=True)
+        built_path = ci.cpp.build(args.profile, coverage=args.coverage)
+        ci.cpp.check(built_path, coverage=args.coverage)
     elif args.command == "deploy":
         git_tag = os.environ["CI_COMMIT_TAG"]
         version = ci.version_from_git_tag(git_tag)
