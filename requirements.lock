@@ -1,5 +1,5 @@
-# Generated with dmenv 0.11.1, python 3.6.8, on Linux
--e git+ssh://git@tanker.local/Tanker/ci@master#egg=ci
+# Generated with dmenv 0.14.2, python 3.7.3, on Linux
+-e git+ssh://git@tanker.local/Tanker/ci@theo/new_ci#egg=ci
 appdirs==1.4.3
 asn1crypto==0.24.0
 astroid==2.2.5
@@ -10,7 +10,7 @@ cffi==1.12.2
 chardet==3.0.4
 cli-ui==0.9.1
 colorama==0.4.1
-conan==1.14.1
+conan==1.16.0
 contextlib2==0.5.5
 cryptography==2.3.1
 deprecation==2.0.6
@@ -31,7 +31,7 @@ node-semver==0.6.1
 packaging==19.0
 patch==1.16
 path.py==11.5.0
-pip==19.1
+pip==19.1.1
 pluginbase==0.7
 psutil==5.6.1
 pycparser==2.19
@@ -40,6 +40,7 @@ PyJWT==1.7.1
 pylint==2.3.1
 pyOpenSSL==18.0.0
 pyparsing==2.3.1
+python-dateutil==2.8.0
 python-gitlab==1.8.0
 PyYAML==3.13
 requests==2.21.0
