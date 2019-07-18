@@ -9,7 +9,6 @@ import ci.android
 import ci.cpp
 import ci.conan
 import ci.ios
-import ci.mail
 import ci.git
 
 
