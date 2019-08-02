@@ -5,16 +5,19 @@ import sys
 from path import Path
 
 import ci
-import ci.android
 import ci.cpp
 import ci.conan
-import ci.ios
 import ci.git
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--isolate-conan-user-home", action="store_true", dest="home_isolation", default=False)
+    parser.add_argument(
+        "--isolate-conan-user-home",
+        action="store_true",
+        dest="home_isolation",
+        default=False,
+    )
     subparsers = parser.add_subparsers(title="subcommands", dest="command")
 
     build_and_test_parser = subparsers.add_parser("build-and-test")
