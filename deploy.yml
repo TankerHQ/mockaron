@@ -2,10 +2,6 @@ profiles:
   linux:
     - gcc8-debug
     - gcc8-release
-    - mingw32-debug
-    - mingw32-release
-    - mingw64-debug
-    - mingw64-release
     - android-x86-debug
     - android-x86-release
     - android-x86_64-debug
@@ -31,3 +27,5 @@ profiles:
   win32:
     - vs2019-debug
     - vs2019-release
+    - mingw32-debug
+    - mingw32-release
