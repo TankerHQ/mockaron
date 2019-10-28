@@ -1,4 +1,4 @@
-# Generated with dmenv 0.16.1, python 3.7.4+, on Linux
+# Generated with dmenv 0.17.0, python 3.7.1, on Linux
 -e git+ssh://git@tanker.local/Tanker/ci@master#egg=ci
 appdirs==1.4.3
 astroid==2.3.1
@@ -8,7 +8,7 @@ certifi==2019.9.11
 chardet==3.0.4
 cli-ui==0.9.1
 colorama==0.4.1
-conan==1.18.5
+conan==1.19.2
 contextlib2==0.5.5
 deprecation==2.0.7
 distro==1.1.0
@@ -28,7 +28,7 @@ node-semver==0.6.1
 packaging==19.2
 patch==1.16
 path.py==12.0.1
-pip==19.2.3
+pip==19.3.1
 pluginbase==0.7
 psutil==5.6.3
 Pygments==2.4.2
@@ -51,5 +51,6 @@ tqdm==4.36.1
 typed-ast==1.4.0
 Unidecode==1.1.1
 urllib3==1.25.3
+wheel==0.33.6
 wrapt==1.11.2
 zipp==0.6.0
