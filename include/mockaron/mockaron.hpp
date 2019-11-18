@@ -108,11 +108,24 @@
       MOCKARON_CONCAT(_mockaron_function_mock, __LINE__)(              \
           reinterpret_cast<void const*>(func), hndl)
 
+/* Same as MOCKARON_SET_FUNCTION_IMPL but with overload support and a custom
+ * return type.
+ */
+#define MOCKARON_SET_FUNCTION_IMPL_CUSTOM(sig, ret, func, hndl) \
+  ::mockaron::detail::raii_mock<                                \
+      ::mockaron::detail::replace_return_type_t<sig, ret>>      \
+      MOCKARON_CONCAT(_mockaron_function_mock, __LINE__)(       \
+          reinterpret_cast<void const*>(                        \
+              static_cast<std::add_pointer_t<sig>>(func)),      \
+          hndl)
+
 #if MOCKARON_DISABLE_HOOKS
 #define MOCKARON_HOOK(...)
 #define MOCKARON_HOOK0(...)
+#define MOCKARON_HOOK_CUSTOM(...)
 #define MOCKARON_HOOK_SIG(...)
 #define MOCKARON_HOOK_SIG0(...)
+#define MOCKARON_FUNCTION_HOOK_CUSTOM(...)
 #define MOCKARON_FUNCTION_HOOK(...)
 #define MOCKARON_FUNCTION_HOOK0(...)
 #else
@@ -157,16 +170,45 @@
  *                        // arguments
  *                        MOCKARON_ADD_COMMA(groupIds));
  */
-#define MOCKARON_HOOK_CUSTOM(sig, ret, cl, func, return, exp)           \
+#define MOCKARON_HOOK_CUSTOM(sig, ret, cl, func, _return, exp)          \
   do                                                                    \
   {                                                                     \
     (void)static_cast<::mockaron::detail::add_class_ptr_t<cl, sig>>(    \
         &cl::func);                                                     \
     if (!::mockaron::detail::is_a_mock(this))                           \
       break;                                                            \
-    return ((::mockaron::detail::run_hook<sig, ret>(                    \
+    _return((::mockaron::detail::run_hook<sig, ret>(                    \
         *reinterpret_cast<::mockaron::detail::mock_impl* const*>(this), \
         #func exp)));                                                   \
+  } while (0)
+
+/** Same as MOCKARON_HOOK_FUNCTION but with support for overload and a custom
+ * return type.
+ *
+ * Usage:
+ *
+ *   MOCKARON_FUNCTION_HOOK_CUSTOM(
+ *       // function signature
+ *       tc::cotask<PullResult>(gsl::span<GroupId const>),
+ *       // real return type
+ *       PullResult,
+ *       // function name
+ *       pull,
+ *       // return, co_return or a function-macro
+ *       TC_RETURN,
+ *       // arguments
+ *       groupIds);
+ */
+#define MOCKARON_FUNCTION_HOOK_CUSTOM(sig, ret, func, _return, ...)           \
+  do                                                                          \
+  {                                                                           \
+    auto const mock = ::mockaron::detail::get_function_hook(                  \
+        reinterpret_cast<void*>(static_cast<std::add_pointer_t<sig>>(func))); \
+    if (!mock)                                                                \
+      break;                                                                  \
+    _return((mock->get<::std::function<                                       \
+                 ::mockaron::detail::replace_return_type_t<sig, ret>>>()(     \
+        __VA_ARGS__)));                                                       \
   } while (0)
 
 /** Hook a function with mockaron
