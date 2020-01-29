@@ -63,27 +63,24 @@ version = "3.0.4"
 
 [[package]]
 category = "main"
-description = "Tanker ci utils"
+description = ""
 name = "ci"
 optional = false
-python-versions = "*"
-version = "0.0.0"
+python-versions = "^3.7"
+version = "0.1.0"
 
 [package.dependencies]
-appdirs = "*"
-cli-ui = "*"
+appdirs = "^1.4.3"
+cli-ui = "^0.10.0"
 conan = "1.19.2"
-path = "*"
-psutil = "*"
-python-gitlab = "*"
-"ruamel.yaml" = "*"
-tbump = ">=5.0.4"
-
-[package.extras]
-dev = ["black", "mypy (0.760)", "flake8 (3.7.9)"]
+path = "^13.1.0"
+psutil = "^5.6.7"
+python-gitlab = "^2.0.0"
+"ruamel.yaml" = "0.16.5"
+tbump = "^6.0.5"
 
 [package.source]
-reference = "930b66ef564513b3d1674ce614e09cf20f791524"
+reference = "06cdc95c194ed5a9fe3ad9c952142c9c819c66bb"
 type = "git"
 url = "git+ssh://git@tanker.local/Tanker/ci"
 [[package]]
@@ -451,7 +448,7 @@ description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip pres
 name = "ruamel.yaml"
 optional = false
 python-versions = "*"
-version = "0.16.6"
+version = "0.16.5"
 
 [package.dependencies]
 [package.dependencies."ruamel.yaml.clib"]
@@ -808,8 +805,8 @@ requests = [
     {file = "requests-2.22.0.tar.gz", hash = "sha256:11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4"},
 ]
 "ruamel.yaml" = [
-    {file = "ruamel.yaml-0.16.6-py2.py3-none-any.whl", hash = "sha256:91d6bfe4fce401a00388deb0f5d29e10d2d3683a868c1113ae16bbc351ceb6a4"},
-    {file = "ruamel.yaml-0.16.6.tar.gz", hash = "sha256:966e5a049eebf011c90424b9ec7dab6358cee8de0907354b27a27f20a8c4c2ec"},
+    {file = "ruamel.yaml-0.16.5-py2.py3-none-any.whl", hash = "sha256:0db639b1b2742dae666c6fc009b8d1931ef15c9276ef31c0673cc6dcf766cf40"},
+    {file = "ruamel.yaml-0.16.5.tar.gz", hash = "sha256:412a6f5cfdc0525dee6a27c08f5415c7fd832a7afcb7a0ed7319628aed23d408"},
 ]
 "ruamel.yaml.clib" = [
     {file = "ruamel.yaml.clib-0.2.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:9c6d040d0396c28d3eaaa6cb20152cb3b2f15adf35a0304f4f40a3cf9f1d2448"},
