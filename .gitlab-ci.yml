@@ -1,5 +1,5 @@
 before_script:
- - dmenv install
+ - poetry install
 
 stages:
   - build
@@ -14,19 +14,19 @@ build/linux:
   extends: .build
   tags: [linux]
   script:
-    - dmenv run -- python run-ci.py --isolate-conan-user-home build-and-test --profile gcc8-release
+    - poetry run python run-ci.py --isolate-conan-user-home build-and-test --profile gcc8-release
 
 build/macos:
   extends: .build
   tags: [macos]
   script:
-    - dmenv run -- python run-ci.py --isolate-conan-user-home build-and-test --profile macos-release
+    - poetry run python run-ci.py --isolate-conan-user-home build-and-test --profile macos-release
 
 build/windows:
   extends: .build
   tags: [windows]
   script:
-    - dmenv run -- python run-ci.py --isolate-conan-user-home build-and-test --profile vs2019-release
+    - poetry run python run-ci.py --isolate-conan-user-home build-and-test --profile vs2019-release
 
 
 .deploy:
@@ -41,19 +41,19 @@ deploy/linux:
   extends: .deploy
   tags: [linux]
   script:
-    - dmenv run -- python run-ci.py --isolate-conan-user-home deploy
+    - poetry run python run-ci.py --isolate-conan-user-home deploy
 
 deploy/macos:
   extends: .deploy
   tags: [macos]
   script:
-    - dmenv run -- python run-ci.py --isolate-conan-user-home deploy
+    - poetry run python run-ci.py --isolate-conan-user-home deploy
 
 deploy/windows:
   extends: .deploy
   tags: [windows]
   script:
-    - dmenv run -- python run-ci.py --isolate-conan-user-home deploy
+    - poetry run python run-ci.py --isolate-conan-user-home deploy
 
 mirror:
   tags:
@@ -65,4 +65,4 @@ mirror:
   except:
     - schedules
   script:
-    - dmenv run -- python run-ci.py --isolate-conan-user-home mirror
+    - poetry run python run-ci.py --isolate-conan-user-home mirror
